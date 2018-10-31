@@ -1,0 +1,84 @@
+<!--
+  Copyright (c) 2012-2018 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<embedded xmlns="http://www.terracottatech.com/v1/terracotta/store/embedded"
+          xmlns:tcs="http://www.terracottatech.com/v1/terracotta/store">
+  <offheap-resources>
+    <offheap-resource name="offheap" unit="B">104857600</offheap-resource>
+  </offheap-resources>
+  <disk-resources>
+    <disk-resource name="disk1" file-mode="REOPEN_OR_NEW">${DISKA_TEMPLATE}</disk-resource>
+    <disk-resource name="disk2" file-mode="NEW">${DISKB_TEMPLATE}</disk-resource>
+    <disk-resource name="disk3" file-mode="NEW">${DISKC_TEMPLATE}</disk-resource>
+    <disk-resource name="disk4" file-mode="REOPEN_OR_NEW">${DISKD_TEMPLATE}</disk-resource>
+  </disk-resources>
+  <dataset name="dataset1" key-type="STRING">
+    <tcs:offheap-resource>offheap</tcs:offheap-resource>
+    <tcs:disk-resource storage-type="FRS">disk2</tcs:disk-resource>
+    <tcs:indexes>
+      <tcs:index>
+        <tcs:cell-definition name="cell1" type="BOOL"/>
+        <tcs:type>BTREE</tcs:type>
+      </tcs:index>
+    </tcs:indexes>
+    <tcs:durability-eventual/>
+    <tcs:advanced>
+      <tcs:concurrency-hint>16</tcs:concurrency-hint>
+    </tcs:advanced>
+  </dataset>
+  <dataset name="dataset2" key-type="BOOL">
+    <tcs:offheap-resource>offheap</tcs:offheap-resource>
+    <tcs:disk-resource storage-type="FRS">disk2</tcs:disk-resource>
+    <tcs:indexes>
+      <tcs:index>
+        <tcs:cell-definition name="cell2" type="CHAR"/>
+        <tcs:type>BTREE</tcs:type>
+      </tcs:index>
+    </tcs:indexes>
+    <tcs:durability-every-mutation/>
+    <tcs:advanced>
+      <tcs:concurrency-hint>16</tcs:concurrency-hint>
+    </tcs:advanced>
+  </dataset>
+  <dataset name="dataset3" key-type="INT">
+    <tcs:offheap-resource>offheap</tcs:offheap-resource>
+    <tcs:disk-resource storage-type="HYBRID">disk3</tcs:disk-resource>
+    <tcs:indexes>
+      <tcs:index>
+        <tcs:cell-definition name="cell3" type="DOUBLE"/>
+        <tcs:type>BTREE</tcs:type>
+      </tcs:index>
+    </tcs:indexes>
+    <tcs:durability-timed unit="MILLIS">5000</tcs:durability-timed>
+    <tcs:advanced>
+      <tcs:concurrency-hint>16</tcs:concurrency-hint>
+    </tcs:advanced>
+  </dataset>
+  <dataset name="dataset4" key-type="DOUBLE">
+    <tcs:offheap-resource>offheap</tcs:offheap-resource>
+    <tcs:disk-resource storage-type="FRS">disk2</tcs:disk-resource>
+    <tcs:indexes>
+      <tcs:index>
+        <tcs:cell-definition name="cell4" type="STRING"/>
+        <tcs:type>BTREE</tcs:type>
+      </tcs:index>
+    </tcs:indexes>
+    <tcs:durability-every-mutation/>
+    <tcs:advanced>
+      <tcs:concurrency-hint>16</tcs:concurrency-hint>
+    </tcs:advanced>
+  </dataset>
+</embedded>

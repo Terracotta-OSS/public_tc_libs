@@ -1,0 +1,11 @@
+# Copyright (c) 2011-2018 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.
+# Use, reproduction, transfer, publication or disclosure is prohibited except as specifically provided for in your License Agreement with Software AG.
+
+Bundle-SymbolicName: com.terracottatech.store.terracotta-store-client
+Bundle-Name: Terracotta TCStore Client
+
+Import-package: !com.terracottatech.store*, *
+
+Export-Package: !com.terracottatech.store.internal*, com.terracottatech.store*;-split-package:=merge-first
+
+Bundle-Version: ${project.osgiVersion}

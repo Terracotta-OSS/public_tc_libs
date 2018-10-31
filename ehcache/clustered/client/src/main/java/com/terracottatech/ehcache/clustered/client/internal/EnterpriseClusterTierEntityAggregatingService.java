@@ -1,0 +1,65 @@
+/*
+ * Copyright (c) 2012-2018 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.terracottatech.ehcache.clustered.client.internal;
+
+import org.ehcache.clustered.client.internal.store.InternalClusterTierClientEntity;
+import org.ehcache.clustered.common.internal.messages.EntityConfigurationCodec;
+
+import com.terracottatech.ehcache.clustered.client.internal.config.ConfigurationSplitter;
+import com.terracottatech.ehcache.clustered.common.internal.messages.EnterpriseConfigCodec;
+import com.terracottatech.entity.AggregateEndpoint;
+import com.terracottatech.entity.EntityAggregatingService;
+import org.ehcache.clustered.common.internal.store.ClusterTierEntityConfiguration;
+
+/**
+ * EnterpriseClusterTierEntityAggregatingService
+ */
+public class EnterpriseClusterTierEntityAggregatingService implements EntityAggregatingService<InternalClusterTierClientEntity, ClusterTierEntityConfiguration> {
+
+  private final EntityConfigurationCodec configCodec = new EntityConfigurationCodec(new EnterpriseConfigCodec());
+  private final ConfigurationSplitter configSplitter = new ConfigurationSplitter();
+
+  @Override
+  public boolean handlesEntityType(Class<InternalClusterTierClientEntity> cls) {
+    return InternalClusterTierClientEntity.class.isAssignableFrom(cls);
+  }
+
+  @Override
+  public InternalClusterTierClientEntity aggregateEntities(AggregateEndpoint<InternalClusterTierClientEntity> endpoint) {
+    return new AggregatingClusterTierClientEntity(endpoint);
+  }
+
+  @Override
+  public boolean targetConnectionForLifecycle(int stripeIndex, int totalStripes, String entityName, ClusterTierEntityConfiguration config) {
+    return true;
+  }
+
+  @Override
+  public ClusterTierEntityConfiguration formulateConfigurationForStripe(int stripeIndex, int totalStripes, String entityName, ClusterTierEntityConfiguration config) {
+    return new ClusterTierEntityConfiguration(config.getManagerIdentifier(), config.getStoreIdentifier(), configSplitter
+        .splitServerStoreConfiguration(config.getConfiguration(), totalStripes));
+  }
+
+  @Override
+  public byte[] serializeConfiguration(ClusterTierEntityConfiguration configuration) {
+    return configCodec.encode(configuration);
+  }
+
+  @Override
+  public ClusterTierEntityConfiguration deserializeConfiguration(byte[] configuration) {
+    return configCodec.decodeClusteredStoreConfiguration(configuration);
+  }
+}

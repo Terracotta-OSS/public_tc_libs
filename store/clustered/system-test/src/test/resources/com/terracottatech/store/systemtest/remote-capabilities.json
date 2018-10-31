@@ -1,0 +1,230 @@
+[
+  {
+    "capabilityContext": {
+      "attributes": [
+        {
+          "name": "datasetManagerName",
+          "required": true
+        },
+        {
+          "name": "datasetName",
+          "required": true
+        },
+        {
+          "name": "datasetInstanceName",
+          "required": true
+        }
+      ]
+    },
+    "descriptors": [
+      {
+        "datasetInstanceName": "employee-53",
+        "datasetName": "employee",
+        "type": "Dataset"
+      },
+      {
+        "instanceId": "instance-id",
+        "type": "DatasetManager"
+      }
+    ],
+    "name": "DatasetSettings"
+  },
+  {
+    "capabilityContext": {
+      "attributes": [
+        {
+          "name": "datasetManagerName",
+          "required": true
+        },
+        {
+          "name": "datasetName",
+          "required": true
+        },
+        {
+          "name": "datasetInstanceName",
+          "required": true
+        }
+      ]
+    },
+    "descriptors": [
+      {
+        "name": "Dataset:Add:AlreadyExists",
+        "type": "COUNTER"
+      },
+      {
+        "name": "Dataset:Add:Failure",
+        "type": "COUNTER"
+      },
+      {
+        "name": "Dataset:Add:Success",
+        "type": "COUNTER"
+      },
+      {
+        "name": "Dataset:AddLatency#100",
+        "type": "GAUGE"
+      },
+      {
+        "name": "Dataset:AddLatency#50",
+        "type": "GAUGE"
+      },
+      {
+        "name": "Dataset:AddLatency#95",
+        "type": "GAUGE"
+      },
+      {
+        "name": "Dataset:AddLatency#99",
+        "type": "GAUGE"
+      },
+      {
+        "name": "Dataset:Delete:Failure",
+        "type": "COUNTER"
+      },
+      {
+        "name": "Dataset:Delete:NotFound",
+        "type": "COUNTER"
+      },
+      {
+        "name": "Dataset:Delete:Success",
+        "type": "COUNTER"
+      },
+      {
+        "name": "Dataset:DeleteLatency#100",
+        "type": "GAUGE"
+      },
+      {
+        "name": "Dataset:DeleteLatency#50",
+        "type": "GAUGE"
+      },
+      {
+        "name": "Dataset:DeleteLatency#95",
+        "type": "GAUGE"
+      },
+      {
+        "name": "Dataset:DeleteLatency#99",
+        "type": "GAUGE"
+      },
+      {
+        "name": "Dataset:Get:Failure",
+        "type": "COUNTER"
+      },
+      {
+        "name": "Dataset:Get:NotFound",
+        "type": "COUNTER"
+      },
+      {
+        "name": "Dataset:Get:Success",
+        "type": "COUNTER"
+      },
+      {
+        "name": "Dataset:GetLatency#100",
+        "type": "GAUGE"
+      },
+      {
+        "name": "Dataset:GetLatency#50",
+        "type": "GAUGE"
+      },
+      {
+        "name": "Dataset:GetLatency#95",
+        "type": "GAUGE"
+      },
+      {
+        "name": "Dataset:GetLatency#99",
+        "type": "GAUGE"
+      },
+      {
+        "name": "Dataset:Stream:Failure",
+        "type": "COUNTER"
+      },
+      {
+        "name": "Dataset:Stream:Request",
+        "type": "COUNTER"
+      },
+      {
+        "name": "Dataset:Update:Failure",
+        "type": "COUNTER"
+      },
+      {
+        "name": "Dataset:Update:NotFound",
+        "type": "COUNTER"
+      },
+      {
+        "name": "Dataset:Update:Success",
+        "type": "COUNTER"
+      },
+      {
+        "name": "Dataset:UpdateLatency#100",
+        "type": "GAUGE"
+      },
+      {
+        "name": "Dataset:UpdateLatency#50",
+        "type": "GAUGE"
+      },
+      {
+        "name": "Dataset:UpdateLatency#95",
+        "type": "GAUGE"
+      },
+      {
+        "name": "Dataset:UpdateLatency#99",
+        "type": "GAUGE"
+      }
+    ],
+    "name": "DatasetStatistics"
+  },
+  {
+    "capabilityContext": {
+      "attributes": []
+    },
+    "descriptors": [
+      {
+        "name": "getThreadDump",
+        "parameters": [],
+        "returnType": "java.lang.String"
+      }
+    ],
+    "name": "DiagnosticCalls"
+  },
+  {
+    "capabilityContext": {
+      "attributes": []
+    },
+    "descriptors": [],
+    "name": "NmsAgentService"
+  },
+  {
+    "capabilityContext": {
+      "attributes": [
+        {
+          "name": "datasetManagerName",
+          "required": true
+        }
+      ]
+    },
+    "descriptors": [
+      {
+        "name": "isRunning",
+        "parameters": [],
+        "returnType": "boolean"
+      },
+      {
+        "name": "startStatisticCollector",
+        "parameters": [
+          {
+            "name": "interval",
+            "type": "long"
+          },
+          {
+            "name": "unit",
+            "type": "java.util.concurrent.TimeUnit"
+          }
+        ],
+        "returnType": "void"
+      },
+      {
+        "name": "stopStatisticCollector",
+        "parameters": [],
+        "returnType": "void"
+      }
+    ],
+    "name": "StatisticCollectorCapability"
+  }
+]

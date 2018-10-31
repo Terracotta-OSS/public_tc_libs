@@ -1,0 +1,55 @@
+#!/bin/bash
+##
+## Build/install and run one or more tests from com.terracottatech.sovereign.impl.memory.codec.StringToolPerformanceTest.
+## This script must be initiated from the root directory of the Sovereign project.
+##
+## @param repeatCount  (required) the number of times the selected test are to be repeated
+## @param testCaseName (optional) zero or more test method names from StringToolPerformanceTest;
+##                      if no names are provided, all tests are run
+##
+## Use of this script requires that the sovereigm/impl module dependencies be installed in the local Maven
+## repository.  This can be accomplished by setting the 'INSTALL' variable to 'true' as in
+##
+##         INSTALL=true ./StringTool_main 0
+##
+## which will perform a 'clean install' without running any StringToolPerformanceTest methods.
+##
+## JIT=true enables HotSpot JIT compilation and inlining diagnostic output
+## MAXHEAP=<Xmx-value> sets the maximum heap size for the performance test; 8G is the default
+##
+## @see StringTool_full
+## @see StringTool_parse.awk
+
+repeatCount="${1:?Must provide test repeat count}"
+shift 1
+
+clpath="$(mktemp $(basename "$0")_clpath_XXXXXX)" || exit
+function cleanup() {
+    if [ "${clpath}" -a -e "${clpath}" ]; then
+        rm -f "${clpath}"
+    fi
+}
+trap cleanup EXIT
+
+if [ "${INSTALL}" == "true" ]; then
+    mvn -Dcheckstyle.skip=true \
+            -Dspotbugs.skip=true \
+            -DskipTests \
+        clean install
+fi
+
+mvn -q -Dcheckstyle.skip=true \
+        -Dspotbugs.skip=true \
+    test-compile -pl impl
+
+
+mvn -q dependency:build-classpath \
+    -pl impl \
+    -Dmdep.regenerateFile=true \
+    -Dmdep.includeScope=test \
+    "-Dmdep.outputFile=${PWD}/${clpath}"
+
+export CLASSPATH="impl/target/test-classes:impl/target/classes:$(<${clpath})"
+java  -Xmx${MAXHEAP:-8G} \
+      ${JIT:+-XX:+PrintCompilation -XX:+UnlockDiagnosticVMOptions -XX:+PrintInlining} \
+        com.terracottatech.sovereign.impl.memory.codec.StringToolPerformanceTest ${repeatCount} "${@}"

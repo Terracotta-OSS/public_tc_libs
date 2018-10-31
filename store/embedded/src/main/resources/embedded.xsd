@@ -1,0 +1,121 @@
+<!--
+  Copyright (c) 2012-2018 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<xs:schema
+    xmlns="http://www.terracottatech.com/v1/terracotta/store/embedded"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:tcs="http://www.terracottatech.com/v1/terracotta/store"
+    version="1.0" targetNamespace="http://www.terracottatech.com/v1/terracotta/store/embedded" elementFormDefault="qualified">
+
+  <xs:import namespace="http://www.terracottatech.com/v1/terracotta/store"/>
+
+  <xs:element name="embedded" type="embedded-spec">
+    <xs:annotation>
+      <xs:documentation xml:lang="en">
+        Configures a Embedded DatasetManager
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+
+  <xs:complexType name="embedded-spec">
+    <xs:sequence>
+      <xs:element name="offheap-resources" type="offheap-resources-spec">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Configures one or more offheap-resources for the Embedded DatasetManager
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="disk-resources" type="disk-resources-spec" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Configures one or more disk-resources for the Embedded DatasetManager
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+      <xs:element name="dataset" type="tcs:dataset-spec" minOccurs="0" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Specifies a dataset configuration
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="disk-resources-spec">
+    <xs:sequence>
+      <xs:element name="disk-resource" type="disk-resource-spec" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Specifies a disk-resource configuration such as name, persistence-mode, file-mode and path
+            Note that relative paths will be resolved from current working directory
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="offheap-resources-spec">
+    <xs:sequence>
+      <xs:element name="offheap-resource" type="offheap-resource-spec" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Specifies a offheap-resource configuration such as name and resource size
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="disk-resource-spec">
+    <xs:simpleContent>
+      <xs:extension base="tcs:min-width-string">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="file-mode" type="file-mode-spec" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="offheap-resource-spec">
+    <xs:simpleContent>
+      <xs:extension base="xs:positiveInteger">
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="unit" type="memory-unit" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:simpleType name="memory-unit">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="B"/>
+      <xs:enumeration value="KB"/>
+      <xs:enumeration value="MB"/>
+      <xs:enumeration value="GB"/>
+      <xs:enumeration value="TB"/>
+      <xs:enumeration value="PB"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="file-mode-spec">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="NEW"/>
+      <xs:enumeration value="REOPEN"/>
+      <xs:enumeration value="OVERWRITE"/>
+      <xs:enumeration value="REOPEN_OR_NEW"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

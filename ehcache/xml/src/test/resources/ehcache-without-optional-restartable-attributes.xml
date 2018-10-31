@@ -1,0 +1,95 @@
+<!--
+  Copyright (c) 2012-2018 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+
+<eh:config
+    xmlns:eh="http://www.ehcache.org/v3"
+    xmlns:tc="http://www.terracottatech.com/v3/terracotta/ehcache">
+
+  <eh:service>
+    <tc:cluster>
+      <tc:connection url="terracotta://example.com:9540/cachemanager"/>
+      <tc:read-timeout unit="seconds">5</tc:read-timeout>
+      <tc:server-side-config auto-create="true">
+        <tc:default-resource from="primary-server-resource"/>
+        <tc:shared-pool name="shared-pool1" from="primary-server-resource" unit="MB">8</tc:shared-pool>
+        <tc:shared-pool name="shared-pool2" unit="MB">8</tc:shared-pool>
+        <tc:restartable>root1</tc:restartable>
+      </tc:server-side-config>
+    </tc:cluster>
+  </eh:service>
+
+  <eh:persistence directory="target/data"/>
+
+  <eh:cache alias="dedicated-cache">
+    <eh:key-type>java.lang.Long</eh:key-type>
+    <eh:value-type>java.lang.String</eh:value-type>
+    <eh:resources>
+      <tc:clustered-dedicated from="primary-server-resource" unit="MB">4</tc:clustered-dedicated>
+    </eh:resources>
+  </eh:cache>
+
+  <eh:cache alias="dedicated-restartable-cache">
+    <eh:key-type>java.lang.Long</eh:key-type>
+    <eh:value-type>java.lang.String</eh:value-type>
+    <eh:resources>
+      <tc:clustered-restartable-dedicated from="secondary-server-resource" unit="MB"
+                                          data-percent="88">4</tc:clustered-restartable-dedicated>
+    </eh:resources>
+    <tc:clustered-store consistency="strong"/>
+  </eh:cache>
+
+  <eh:cache alias="another-dedicated-restartable-cache">
+    <eh:key-type>java.lang.Long</eh:key-type>
+    <eh:value-type>java.lang.String</eh:value-type>
+    <eh:resources>
+      <tc:clustered-restartable-dedicated unit="MB">8</tc:clustered-restartable-dedicated>
+    </eh:resources>
+  </eh:cache>
+
+  <eh:cache alias="shared-cache">
+    <eh:key-type>java.lang.Long</eh:key-type>
+    <eh:value-type>java.lang.String</eh:value-type>
+    <eh:resources>
+      <tc:clustered-shared sharing="shared-pool"/>
+    </eh:resources>
+  </eh:cache>
+
+  <eh:cache alias="shared-restartable-cache">
+    <eh:key-type>java.lang.Long</eh:key-type>
+    <eh:value-type>java.lang.String</eh:value-type>
+    <eh:resources>
+      <tc:clustered-restartable-shared sharing="shared-pool1"/>
+    </eh:resources>
+  </eh:cache>
+
+  <eh:cache alias="another-shared-restartable-cache">
+    <eh:key-type>java.lang.Long</eh:key-type>
+    <eh:value-type>java.lang.String</eh:value-type>
+    <eh:resources>
+      <tc:clustered-restartable-shared sharing="shared-pool2"/>
+    </eh:resources>
+  </eh:cache>
+
+  <eh:cache alias="frs-cache">
+    <eh:key-type>java.lang.Long</eh:key-type>
+    <eh:value-type>java.lang.String</eh:value-type>
+    <eh:resources>
+      <tc:disk-restartable unit="MB">2</tc:disk-restartable>
+    </eh:resources>
+  </eh:cache>
+
+</eh:config>

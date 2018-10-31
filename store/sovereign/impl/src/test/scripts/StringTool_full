@@ -1,0 +1,59 @@
+#!/bin/bash
+##
+## Run StringTool_main for each revision in a fixed range.  This script must be
+## initiated from the root directory of the Sovereign project.  Output from this
+## script may be post-processed with the StringTool_parse.awk script to convert it
+## to a form more easily imported into a spreadsheet.
+##
+## **** This script needs to be locally verified and possibly modified before use. ****
+##
+## @param testCaseName (optional) zero or more test method names from
+##          com.terracottatech.sovereign.impl.memory.codec.StringToolPerformanceTest;
+##          if no names are provided, all tests are run
+##
+## See StringTool_main for environment & operation requirements.
+##
+## @see StringTool_main
+## @see StringTool_parse.awk
+
+repeatCount=1
+
+## Only update local repository if running on a performance test machine
+if [[ "${HOSTNAME}" == tc-perf-* ]]; then
+    git fetch
+    git checkout TAB-6088-mod
+    git reset --hard origin/TAB-6088-mod
+fi
+
+declare -r startTime=$(date '+%s')
+
+## For each commit in the range, checkout the commit (detached) and run
+## StringTool_main for the selected tests.
+declare -i i=0
+exec 6< <( git log --pretty=format:"%h %s" --no-merges --reverse origin/TAB-6088..TAB-6088-mod ; echo "" )
+while read -u 6 commitHash description; do
+    outputFile="StringTool_[${i}]_${commitHash}_$(date '+%Y%m%dT%H%M%S').txt"
+    {
+	    echo -e "\n==================================================================="
+        echo -e "\n[${i}] Processing ${commitHash} ${description}\n"
+    	echo -e "===================================================================\n"
+        if ! git checkout -q --detach ${commitHash} ; then
+            echo "Unable to checkout ${commitHash} ${description}" >&2
+            exit 2
+        fi
+
+        ~/StringTool_main ${repeatCount} "${@}"
+    } 2>&1 | tee "${outputFile}"
+    (( i++ ))
+done
+exec 6<&-
+
+declare -r endTime=$(date '+%s')
+(( duration=(endTime - startTime), minutes=(duration / 60), seconds=(duration % 60) ))
+
+echo -e "\n==================================================================="
+echo "Done!"
+echo ""
+printf "Elapsed time: %d:%02d\n" ${minutes} ${seconds}
+echo -e "===================================================================\n"
+

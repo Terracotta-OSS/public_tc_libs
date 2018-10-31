@@ -1,0 +1,198 @@
+<!--
+  Copyright (c) 2012-2018 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<xs:schema
+    xmlns="http://www.terracottatech.com/v1/terracotta/store"
+    targetNamespace="http://www.terracottatech.com/v1/terracotta/store" version="1.0"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:complexType name="dataset-spec">
+    <xs:sequence>
+      <xs:element name="offheap-resource" type="min-width-string">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Specifies the offheap-resource to be used for the dataset
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+
+      <xs:element name="disk-resource" type="disk-resource-name-spec" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Specifies the disk-resource to be used for the dataset
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+
+      <xs:element name="indexes" type="indexes-spec" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Configures one or more indexes for the dataset
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+
+      <xs:choice minOccurs="0">
+        <xs:element name="durability-eventual">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              Specifies the disk-durability configuration for the dataset
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+
+        <xs:element name="durability-every-mutation">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              Specifies the disk-durability configuration for the dataset
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+
+        <xs:element name="durability-timed" type="durability-timed-spec">
+          <xs:annotation>
+            <xs:documentation xml:lang="en">
+              Specifies the disk-durability configuration for the dataset
+            </xs:documentation>
+          </xs:annotation>
+        </xs:element>
+      </xs:choice>
+
+      <xs:element name="advanced" type="advanced-spec" minOccurs="0">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Specifies the advanced configuration for the dataset
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+
+    <xs:attribute name="name" type="min-width-string" use="required">
+      <xs:annotation>
+        <xs:documentation xml:lang="en">
+          Specifies the name of the dataset
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+
+    <xs:attribute name="key-type" type="key-type-spec" use="required">
+      <xs:annotation>
+        <xs:documentation xml:lang="en">
+          Specifies the key type of the dataset
+        </xs:documentation>
+      </xs:annotation>
+    </xs:attribute>
+  </xs:complexType>
+
+  <xs:complexType name="indexes-spec">
+    <xs:sequence>
+      <xs:element name="index" type="index-definition-spec" maxOccurs="unbounded">
+        <xs:annotation>
+          <xs:documentation xml:lang="en">
+            Specifies the index configuration such as cell definition and index type
+          </xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="index-definition-spec">
+    <xs:sequence>
+      <xs:element name="cell-definition" type="cell-definition-spec"/>
+      <xs:element name="type" type="index-type-spec"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="cell-definition-spec">
+    <xs:attribute name="name" type="min-width-string" use="required"/>
+    <xs:attribute name="type" type="cell-type-spec" use="required"/>
+  </xs:complexType>
+
+  <xs:simpleType name="index-type-spec">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="BTREE"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="durability-timed-spec">
+    <xs:simpleContent>
+      <xs:extension base="xs:positiveInteger">
+        <xs:attribute name="unit" type="time-unit-spec" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="advanced-spec">
+    <xs:sequence>
+      <xs:element name="concurrency-hint" type="xs:positiveInteger"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="key-type-spec">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="BOOL"/>
+      <xs:enumeration value="CHAR"/>
+      <xs:enumeration value="INT"/>
+      <xs:enumeration value="LONG"/>
+      <xs:enumeration value="DOUBLE"/>
+      <xs:enumeration value="STRING"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="cell-type-spec">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="BOOL"/>
+      <xs:enumeration value="CHAR"/>
+      <xs:enumeration value="INT"/>
+      <xs:enumeration value="LONG"/>
+      <xs:enumeration value="DOUBLE"/>
+      <xs:enumeration value="STRING"/>
+      <xs:enumeration value="BYTES"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="time-unit-spec">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="NANOS"/>
+      <xs:enumeration value="MICROS"/>
+      <xs:enumeration value="MILLIS"/>
+      <xs:enumeration value="SECONDS"/>
+      <xs:enumeration value="MINUTES"/>
+      <xs:enumeration value="HOURS"/>
+      <xs:enumeration value="DAYS"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="min-width-string">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="disk-resource-name-spec">
+    <xs:simpleContent>
+      <xs:extension base="min-width-string">
+        <xs:attribute name="storage-type" type="storage-type-spec"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:simpleType name="storage-type-spec">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="FRS"/>
+      <xs:enumeration value="HYBRID"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+</xs:schema>

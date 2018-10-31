@@ -1,0 +1,106 @@
+/*
+ * Copyright (c) 2012-2018 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+group = 'com.terracottatech.ehcache'
+
+configurations {
+  compileOnly.exclude module: 'statistics'
+  ehcacheSources {
+    transitive = false
+  }
+  ehcacheJavadocClasspath
+  docs
+}
+
+dependencies {
+  compileOnly project(':terracotta-ehcache-disk')
+  compileOnly project(':terracotta-ehcache-clustered-client')
+  compileOnly project(':terracotta-ehcache-xml')
+  compileOnly "org.ehcache.modules:ehcache-107:$ehcacheVersion"
+  compileOnly("org.ehcache:ehcache-transactions:$ehcacheVersion") {
+    exclude group: 'org.ehcache', module: 'ehcache'
+  }
+  compileOnly "org.ehcache.modules:ehcache-client:$ehcacheVersion"
+  compileOnly("org.ehcache.modules:ehcache-management:$ehcacheVersion") {
+    exclude group: '*'
+  }
+  compile project(':terracotta-common-client')
+
+  ehcacheSources "org.ehcache.modules:ehcache-api:$ehcacheVersion:sources"
+  ehcacheSources "org.ehcache.modules:ehcache-core:$ehcacheVersion:sources"
+  ehcacheSources "org.ehcache.modules:ehcache-impl:$ehcacheVersion:sources"
+  ehcacheSources "org.ehcache.modules:ehcache-xml:$ehcacheVersion:sources"
+  ehcacheSources "org.ehcache.modules:ehcache-107:$ehcacheVersion:sources"
+  ehcacheSources "org.ehcache.modules:ehcache-management:$ehcacheVersion:sources"
+  ehcacheSources "org.ehcache.modules:ehcache-client:$ehcacheVersion:sources"
+  ehcacheSources "org.ehcache:ehcache-transactions:$ehcacheVersion:sources"
+
+  ehcacheJavadocClasspath "javax.cache:cache-api:$jcacheVersion"
+  ehcacheJavadocClasspath group: 'javax.transaction', name: 'jta', version: '1.1'
+  ehcacheJavadocClasspath group: 'org.codehaus.btm', name: 'btm', version: '2.1.4'
+}
+
+apply plugin: TcDistribute
+apply plugin: 'biz.aQute.bnd.builder'
+
+dependencies {
+  // Allows version info to be added to optional import in bundle
+  compileOnly "javax.cache:cache-api:$jcacheVersion"
+}
+
+jar {
+  bndfile = 'config/bnd.bnd'
+}
+
+task extractEhcacheSources(type: Copy) {
+  dependsOn configurations.ehcacheSources
+  into "$buildDir/src/ehcache-os"
+  configurations.ehcacheSources.asFileTree.each {
+    from (zipTree(it))
+  }
+  exclude 'META-INF/**'
+}
+
+javadoc {
+  dependsOn extractEhcacheSources
+  def depProjects = configurations.compileOnly.dependencies.withType(ProjectDependency).dependencyProject
+  source = depProjects.javadoc.source + "$buildDir/src/ehcache-os"
+  classpath += configurations.ehcacheJavadocClasspath
+
+  exclude '**/internal/**', 'org/ehcache/xml/model/**'
+  options.addStringOption('Xdoclint:none', '-quiet')
+
+  if ( JavaVersion.current().compareTo(JavaVersion.VERSION_1_8) > 0 ) {
+    options.addStringOption('-add-modules', 'java.xml.bind')
+  }
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+  from javadoc.destinationDir
+  classifier = 'javadoc'
+}
+
+artifacts {
+  archives javadocJar
+  docs javadocJar
+}
+
+shadowJar {
+  dependencies {
+    //the shadow plugin doesn't honor the provided-ness of transitive deps
+    exclude(dependency("javax.cache:cache-api:$jcacheVersion"))
+  }
+}

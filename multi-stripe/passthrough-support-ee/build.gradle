@@ -1,0 +1,41 @@
+/*
+ * Copyright (c) 2012-2018 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+apply plugin: TcDeploy
+
+dependencies {
+  compile project(':catalog-client')
+  compile project(':multi-stripe:enterprise-connection')
+  compile project(':licensing-client')
+  compile project(':licensing-server')
+  compile project(':data-root-config')
+  compile project(':catalog-api')
+  compile project(':catalog-server')
+  compile project(':licensing-common-test')
+  compile project(':enterprise-clustered-services')
+  compile project(':backup-and-restore-ssi')
+  compile project(':utilities')
+  compile "org.terracotta.internal:tc-config-parser:$terracottaConfigVersion"
+  compile "org.terracotta:offheap-resource:$terracottaPlatformVersion"
+  compile "org.terracotta:runnel:$terracottaPlatformVersion"
+  compile "org.terracotta:client-message-tracker:$terracottaPlatformVersion"
+  compile "org.terracotta:lease-entity-server:$terracottaPlatformVersion"
+  compile "org.terracotta.management.dist:mnm-server:$terracottaPlatformVersion"
+  compile "org.terracotta.management.dist:mnm-nms-agent:$terracottaPlatformVersion"
+  compile "org.terracotta:passthrough-server:$terracottaPassthroughVersion"
+
+  compileOnly "junit:junit:$junitVersion"
+}

@@ -1,0 +1,93 @@
+/*
+ * Copyright (c) 2012-2018 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.terracottatech.tools.config;
+
+
+import java.io.Serializable;
+
+// Terracotta Server configuration
+public final class Server implements Serializable{
+
+  private static final long serialVersionUID = 23000000000231L;
+
+  public static final int DEFAULT_PORT = 9410;
+
+  // Name of the server
+  private final String name;
+
+  // Hostname or IP Address of the server
+  private final String host;
+
+  // Port the TSA is listening on.
+  private final int port;
+
+  public Server(String name, String host) {
+    this.name = name;
+    this.host = host;
+    this.port = DEFAULT_PORT;
+  }
+
+  public Server(String name, String host, int port) {
+    this.name = name;
+    this.host = host;
+    this.port = port;
+  }
+
+  public String getHost() {
+    return host;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public int getPort() {
+    return port;
+  }
+
+  public String getHostPort() {
+    return host + ":" + Integer.toString(port);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
+    Server server = (Server) o;
+
+    if (port != server.port) return false;
+    if (name != null ? !name.equals(server.name) : server.name != null) return false;
+    return host != null ? host.equals(server.host) : server.host == null;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = name != null ? name.hashCode() : 0;
+    result = 31 * result + (host != null ? host.hashCode() : 0);
+    result = 31 * result + port;
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    return "Server{" +
+        "name='" + name + '\'' +
+        ", host='" + host + '\'' +
+        ", port=" + port +
+        '}';
+  }
+}

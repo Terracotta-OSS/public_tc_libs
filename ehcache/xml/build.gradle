@@ -1,0 +1,37 @@
+/*
+ * Copyright (c) 2012-2018 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+apply plugin: TcDeploy
+
+dependencies {
+
+  compile project(':terracotta-ehcache-disk')
+  compile project(':terracotta-ehcache-clustered-client')
+  compileOnly project(':multi-stripe:enterprise-connection-api')
+  compileOnly "org.ehcache.modules:ehcache-xml:$ehcacheVersion"
+  compileOnly "org.ehcache.modules:ehcache-client:$ehcacheVersion"
+
+  testCompile "org.hamcrest:hamcrest-all:$hamcrestVersion"
+  testCompile "org.mockito:mockito-core:$mockitoVersion"
+  testCompile 'org.xmlunit:xmlunit-core:2.6.0', 'org.xmlunit:xmlunit-matchers:2.6.0'
+  testCompile project(':multi-stripe:enterprise-connection-api')
+}
+
+test {
+  if ( JavaVersion.current().compareTo(JavaVersion.VERSION_1_8) > 0 ) {
+    jvmArgs '--add-modules', 'java.xml.bind'
+  }
+}

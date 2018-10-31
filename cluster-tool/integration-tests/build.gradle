@@ -1,0 +1,80 @@
+/*
+ * Copyright (c) 2012-2018 Software AG, Darmstadt, Germany and/or Software AG USA Inc., Reston, VA, USA, and/or its subsidiaries and/or its affiliates and/or their licensors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import org.gradle.internal.jvm.Jvm
+
+evaluationDependsOn(':terracotta-db')
+
+dependencies {
+  testCompile project(':cluster-tool-cli')
+  testCompile project(':terracotta-ehcache-client')
+  testCompile project(':terracotta-store-client')
+  testCompile project(':galvan-support-ee')
+  testCompile project(':utilities')
+  testCompile "org.terracotta.management.dist:mnm-nms:$terracottaPlatformVersion"
+  testCompile "org.hamcrest:java-hamcrest:$javaHamcrestVersion"
+  testCompile "org.mockito:mockito-core:$mockitoVersion"
+  testCompile("com.github.stefanbirkner:system-rules:$systemRulesVersion") {
+    exclude group: 'junit'
+  }
+  testCompile ("org.awaitility:awaitility:$awaitility") {
+    exclude group: 'org.objenesis', module: 'objenesis'
+  }
+}
+
+task unzipKit(type: Copy) {
+  dependsOn project(':terracotta-db').distZip
+  from zipTree(project(':terracotta-db').distZip.archivePath)
+  into 'build/tc-db-kit'
+}
+
+test {
+  dependsOn unzipKit
+
+  // Server-side
+  def serverJvm = Jvm.current()
+  environment 'JAVA_HOME', serverJvm.javaHome
+  if ( serverJvm.getJavaVersion().compareTo(JavaVersion.VERSION_1_8) > 0 ) {
+    environment 'JAVA_OPTS', '--add-modules java.xml.bind'
+  }
+
+  //If this directory does not exist, tests will fail with a cryptic assert failure
+  systemProperty 'kitInstallationPath', "$unzipKit.destinationDir/${project(':terracotta-db').archivesBaseName}-$project.version"
+  systemProperty 'kitTestDirectory', "$buildDir/galvan"
+
+  testLogging {
+    events 'started'
+  }
+}
+
+// Helping out IDE
+plugins.withType(IdeaPlugin) {
+  sourceSets {
+    test {
+      compileClasspath += (findProject(':terracotta-common-client').configurations.compileOnly
+              + findProject(':terracotta-ehcache-client').configurations.compileOnly
+              + findProject(':terracotta-store-client').configurations.compileOnly)
+    }
+  }
+}
+
+eclipse {
+  classpath {
+    plusConfigurations += [ findProject(':terracotta-common-client').configurations.compileOnly,
+                            findProject(':terracotta-ehcache-client').configurations.compileOnly,
+                            findProject(':terracotta-store-client').configurations.compileOnly ]
+  }
+}
